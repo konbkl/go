@@ -44,19 +44,20 @@ func url(text, link string, style gotdbot.ButtonStyle) gotdbot.InlineKeyboardBut
 	}
 }
 
-var CloseBtn = cb("Close", "vcplay_close", gotdbot.ButtonStyleDanger{})
-var HomeBtn = cb("Home", "help_back", gotdbot.ButtonStylePrimary{})
-var HelpBtn = cb("Help", "help_all", gotdbot.ButtonStyleDefault{})
-var UserBtn = cb("Users", "help_user", gotdbot.ButtonStyleDefault{})
-var AdminBtn = cb("Admins", "help_admin", gotdbot.ButtonStyleDefault{})
-var OwnerBtn = cb("Owner", "help_owner", gotdbot.ButtonStyleDefault{})
-var DevsBtn = cb("Devs", "help_devs", gotdbot.ButtonStyleDefault{})
-var PlaylistBtn = cb("Playlist", "help_playlist", gotdbot.ButtonStyleDefault{})
-var AutoplayBtn = cb("Autoplay", "help_autoplay", gotdbot.ButtonStyleDefault{})
+// ---- ALL BUTTONS WITH CUSTOM FONT & EMOJIS ----
+var CloseBtn = cb("𝐂ℓσѕє", "vcplay_close", gotdbot.ButtonStyleDanger{})
+var HomeBtn = cb("𝐇σмє", "help_back", gotdbot.ButtonStylePrimary{})
+var HelpBtn = cb("📥 𝐇єℓρ 𝐀η∂ 𝐂σммαη∂ѕ", "help_all", gotdbot.ButtonStylePrimary{})
+var UserBtn = cb("𝐔ѕєяѕ", "help_user", gotdbot.ButtonStyleDefault{})
+var AdminBtn = cb("𝐀∂мιηѕ", "help_admin", gotdbot.ButtonStyleDefault{})
+var OwnerBtn = cb("🚫 𝐎ωηєя", "help_owner", gotdbot.ButtonStyleDanger{})
+var DevsBtn = cb("✨ 𝐂ℓσηє", "help_devs", gotdbot.ButtonStyleDanger{}) // Kept function same, changed text to Clone
+var PlaylistBtn = cb("𝐏ℓαуℓιѕт", "help_playlist", gotdbot.ButtonStyleDefault{})
+var AutoplayBtn = cb("𝐀υтσρℓαу", "help_autoplay", gotdbot.ButtonStyleDefault{})
 
-var SourceCodeBtn = url("Source Code", "https://t.me/SukkuBeatzBot", gotdbot.ButtonStylePrimary{})
-var channelBtn = url("Updates", config.SupportChannel, gotdbot.ButtonStyleDefault{})
-var groupBtn = url("Group", config.SupportGroup, gotdbot.ButtonStyleDefault{})
+var SourceCodeBtn = url("📦 𝐒συя¢є", "https://t.me/SukkuBeatzBot", gotdbot.ButtonStyleDanger{})
+var channelBtn = url("📢 𝐔ρ∂αтєѕ", config.SupportChannel, gotdbot.ButtonStyleDanger{})
+var groupBtn = url("👥 𝐆яσυρ", config.SupportGroup, gotdbot.ButtonStyleDanger{})
 
 func SupportKeyboard() *gotdbot.ReplyMarkupInlineKeyboard {
 	return &gotdbot.ReplyMarkupInlineKeyboard{
@@ -76,22 +77,22 @@ func SupportBtn() *gotdbot.ReplyMarkupInlineKeyboard {
 }
 
 func SettingsKeyboard(playMode, adminMode string, cmdDelete bool, language string) *gotdbot.ReplyMarkupInlineKeyboard {
-	playText := "Everyone"
+	playText := "𝐄νєяуσηє"
 	if playMode == utils.Admins {
-		playText = "Admins"
+		playText = "𝐀∂мιηѕ"
 	}
 
-	deleteText := "False"
+	deleteText := "𝐅αℓѕє"
 	if cmdDelete {
-		deleteText = "True"
+		deleteText = "𝐓яυє"
 	}
 
-	adminText := "Everyone"
+	adminText := "𝐄νєяуσηє"
 	if adminMode == utils.Admins {
-		adminText = "Admins"
+		adminText = "𝐀∂мιηѕ"
 	}
 
-	langText := "English"
+	langText := "𝐄ηgℓιѕн"
 	if language != "en" && language != "" {
 		langText = language
 	}
@@ -99,19 +100,19 @@ func SettingsKeyboard(playMode, adminMode string, cmdDelete bool, language strin
 	return &gotdbot.ReplyMarkupInlineKeyboard{
 		Rows: [][]gotdbot.InlineKeyboardButton{
 			{
-				cb("Play Mode ➜", "settings_main", gotdbot.ButtonStyleDefault{}),
+				cb("𝐏ℓαу 𝐌σ∂є ➜", "settings_main", gotdbot.ButtonStyleDefault{}),
 				cb(playText, "settings_play", gotdbot.ButtonStyleDefault{}),
 			},
 			{
-				cb("Command Delete ➜", "settings_main", gotdbot.ButtonStyleDefault{}),
+				cb("𝐂σммαη∂ 𝐃єℓєтє ➜", "settings_main", gotdbot.ButtonStyleDefault{}),
 				cb(deleteText, "settings_delete", gotdbot.ButtonStyleDefault{}),
 			},
 			{
-				cb("Admin Mode ➜", "settings_main", gotdbot.ButtonStyleDefault{}),
+				cb("𝐀∂мιη 𝐌σ∂є ➜", "settings_main", gotdbot.ButtonStyleDefault{}),
 				cb(adminText, "settings_admin", gotdbot.ButtonStyleDefault{}),
 			},
 			{
-				cb("Language ➜", "settings_main", gotdbot.ButtonStyleDefault{}),
+				cb("𝐋αηgυαgє ➜", "settings_main", gotdbot.ButtonStyleDefault{}),
 				cb(langText, "settings_lang", gotdbot.ButtonStyleDefault{}),
 			},
 			{CloseBtn},
@@ -198,26 +199,27 @@ func ControlButtons(mode string) *gotdbot.ReplyMarkupInlineKeyboard {
 	}
 }
 
+// Sizzu Style Layout 
 func AddMeMarkup(username string) *gotdbot.ReplyMarkupInlineKeyboard {
 
 	addMeBtn := url(
-		"Aᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ",
+		"✨ 𝐀∂∂ 𝐌є 𝐓σ 𝐘συя 𝐆яσυρ",
 		fmt.Sprintf("https://t.me/%s?startgroup=true", username),
 		gotdbot.ButtonStylePrimary{},
 	)
 
 	return &gotdbot.ReplyMarkupInlineKeyboard{
 		Rows: [][]gotdbot.InlineKeyboardButton{
-			{addMeBtn},
-			{HelpBtn},
-			{channelBtn, groupBtn},
-			{SourceCodeBtn},
+			{addMeBtn},                // Full-width (1st row)
+			{OwnerBtn, DevsBtn},       // Half-width (2nd row)
+			{channelBtn, SourceCodeBtn}, // Half-width (3rd row)
+			{HelpBtn},                 // Full-width (4th row)
 		},
 	}
 }
 
 func PlayNowButton(trackID string) gotdbot.InlineKeyboardButton {
-	return cb("Play Now", fmt.Sprintf("play_now_%s", trackID), gotdbot.ButtonStyleDanger{})
+	return cb("▶️ 𝐏ℓαу 𝐍σω", fmt.Sprintf("play_now_%s", trackID), gotdbot.ButtonStyleDanger{})
 }
 
 func QueueMarkup(trackID string) *gotdbot.ReplyMarkupInlineKeyboard {
