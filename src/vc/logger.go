@@ -9,33 +9,65 @@
 package vc
 
 import (
-	"ashokshau/tgmusic/config"
-	"ashokshau/tgmusic/src/utils"
-	"fmt"
+        "ashokshau/tgmusic/config"
+        "ashokshau/tgmusic/src/utils"
+        "fmt"
 
-	td "github.com/AshokShau/gotdbot"
+        td "github.com/AshokShau/gotdbot"
 )
 
 // sendLogger sends a formatted log message to the designated logger chat.
-// It includes details about the song being played, such as its title, duration, and the user who requested it.
 func sendLogger(client *td.Client, chatID int64, song *utils.CachedTrack) {
-	if chatID == 0 || song == nil || chatID == config.LoggerId {
-		return
-	}
+        if chatID == 0 || song == nil || chatID == config.LoggerId {
+                return
+        }
 
-	text := fmt.Sprintf(
-		"<b>A song is playing</b> in <code>%d</code>\n\n‣ <b>Title:</b> <a href='%s'>%s</a>\n‣ <b>Duration:</b> %s\n‣ <b>Requested by:</b> %s\n‣ <b>Platform:</b> %s\n‣ <b>Is Video:</b> %t",
-		chatID,
-		song.URL,
-		song.Name,
-		utils.SecToMin(song.Duration),
-		song.User,
-		song.Platform,
-		song.IsVideo,
-	)
+        // Fetching Chat Details for logs
+        chatTitle := "Unknown"
+        chatUsername := "None"
+        if chat, err := client.GetChat(chatID); err == nil && chat != nil {
+                if chat.Title != "" {
+                        chatTitle = chat.Title
+                }
+                if chat.Username != "" {
+                        chatUsername = "@" + chat.Username
+                }
+        }
 
-	_, err := client.SendTextMessage(config.LoggerId, text, &td.SendTextMessageOpts{DisableWebPagePreview: true, ParseMode: "HTML"})
-	if err != nil {
-		logger.Warn("Failed to send the message", "error", err)
-	}
+        // Formatting Stream Type
+        streamType := song.Platform
+        if song.IsVideo {
+                streamType += " (Video)"
+        } else {
+                streamType += " (Audio)"
+        }
+
+        // ShiviMusic Style Format
+        text := fmt.Sprintf(
+                "<b>❖ ᴘʟᴀʏ ʟᴏɢ</b>\n\n"+
+                "<b>● ᴄʜᴀᴛ ɪᴅ ➠</b> <code>%d</code>\n"+
+                "<b>● ᴄʜᴀᴛ ɴᴀᴍᴇ ➠</b> %s\n"+
+                "<b>● ᴄʜᴀᴛ ᴜsᴇʀɴᴀᴍᴇ ➠</b> %s\n\n"+
+                "<b>● ʀᴇǫᴜᴇsᴛᴇᴅ ʙʏ ➠</b> %s\n"+
+                "<b>● ǫᴜᴇʀʏ ➠</b> <a href='%s'>%s</a>\n"+
+                "<b>● ᴅᴜʀᴀᴛɪᴏɴ ➠</b> %s\n"+
+                "<b>● sᴛʀᴇᴀᴍᴛʏᴘᴇ ➠</b> %s",
+                chatID,
+                chatTitle,
+                chatUsername,
+                song.User,
+                song.URL,
+                song.Name,
+                utils.SecToMin(song.Duration),
+                streamType,
+        )
+
+        _, err := client.SendTextMessage(config.LoggerId, text, &td.SendTextMessageOpts{
+                DisableWebPagePreview: true,
+                ParseMode:             "HTML",
+        })
+        
+        if err != nil {
+                logger.Warn("Failed to send the message", "error", err)
+        }
 }
