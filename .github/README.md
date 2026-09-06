@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-    <a href="https://heroku.com/deploy?template=https://github.com/istkharroohi78/sukku">
+    <a href="https://heroku.com/deploy?template=https://github.com/konbkl/go">
         <img src="https://www.herokucdn.com/deploy/button.svg" alt="Heroku Deploy">
     </a>
 </p>
