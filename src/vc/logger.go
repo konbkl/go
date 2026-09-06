@@ -22,15 +22,11 @@ func sendLogger(client *td.Client, chatID int64, song *utils.CachedTrack) {
                 return
         }
 
-        // Fetching Chat Details for logs
+        // Fetching Chat Details for logs (Removed Username to fix compilation error)
         chatTitle := "Unknown"
-        chatUsername := "None"
         if chat, err := client.GetChat(chatID); err == nil && chat != nil {
                 if chat.Title != "" {
                         chatTitle = chat.Title
-                }
-                if chat.Username != "" {
-                        chatUsername = "@" + chat.Username
                 }
         }
 
@@ -46,15 +42,13 @@ func sendLogger(client *td.Client, chatID int64, song *utils.CachedTrack) {
         text := fmt.Sprintf(
                 "<b>❖ ᴘʟᴀʏ ʟᴏɢ</b>\n\n"+
                 "<b>● ᴄʜᴀᴛ ɪᴅ ➠</b> <code>%d</code>\n"+
-                "<b>● ᴄʜᴀᴛ ɴᴀᴍᴇ ➠</b> %s\n"+
-                "<b>● ᴄʜᴀᴛ ᴜsᴇʀɴᴀᴍᴇ ➠</b> %s\n\n"+
+                "<b>● ᴄʜᴀᴛ ɴᴀᴍᴇ ➠</b> %s\n\n"+
                 "<b>● ʀᴇǫᴜᴇsᴛᴇᴅ ʙʏ ➠</b> %s\n"+
                 "<b>● ǫᴜᴇʀʏ ➠</b> <a href='%s'>%s</a>\n"+
                 "<b>● ᴅᴜʀᴀᴛɪᴏɴ ➠</b> %s\n"+
                 "<b>● sᴛʀᴇᴀᴍᴛʏᴘᴇ ➠</b> %s",
                 chatID,
                 chatTitle,
-                chatUsername,
                 song.User,
                 song.URL,
                 song.Name,
