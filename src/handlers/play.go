@@ -230,7 +230,7 @@ func handleMedia(c *td.Client, m *td.Message, updater *td.Message, dlMsg *td.Mes
                 )
                 
                 _ = c.DeleteMessages(chatId, []int64{updater.Id}, &td.DeleteMessagesOpts{Revoke: true})
-                _, err = c.SendPhoto(chatId, config.StartImg, &td.SendPhotoOpts{
+                _, err = c.SendPhoto(chatId, td.InputFileByURL(config.StartImg), &td.SendPhotoOpts{
                         Caption:     queueInfo,
                         ParseMode:   "HTML",
                         ReplyMarkup: core.QueueMarkup(saveCache.TrackID),
@@ -253,7 +253,7 @@ func handleMedia(c *td.Client, m *td.Message, updater *td.Message, dlMsg *td.Mes
 
         saveCache.FilePath = filePath
 
-        if err = vc.Calls.PlayMedia(c, chatId, saveCache.FilePath, saveCache.IsVideo, ""); err != nil {
+        if err = vc.Calls.Play(c, chatId, saveCache.FilePath, saveCache.IsVideo, ""); err != nil {
                 cache.ChatCache.RemoveCurrentSong(chatId)
                 _, err = updater.EditText(c, err.Error(), &td.EditTextMessageOpts{ParseMode: "HTML", DisableWebPagePreview: true})
                 return err
@@ -265,7 +265,7 @@ func handleMedia(c *td.Client, m *td.Message, updater *td.Message, dlMsg *td.Mes
         )
 
         _ = c.DeleteMessages(chatId, []int64{updater.Id}, &td.DeleteMessagesOpts{Revoke: true})
-        _, err = c.SendPhoto(chatId, config.StartImg, &td.SendPhotoOpts{
+        _, err = c.SendPhoto(chatId, td.InputFileByURL(config.StartImg), &td.SendPhotoOpts{
                 Caption:     nowPlaying,
                 ParseMode:   "HTML",
                 ReplyMarkup: core.ControlButtons("play"),
@@ -344,7 +344,7 @@ func handleSingleTrack(c *td.Client, m *td.Message, updater *td.Message, song ut
                 )
 
                 _ = c.DeleteMessages(chatId, []int64{updater.Id}, &td.DeleteMessagesOpts{Revoke: true})
-                _, err := c.SendPhoto(chatId, config.StartImg, &td.SendPhotoOpts{
+                _, err := c.SendPhoto(chatId, td.InputFileByURL(config.StartImg), &td.SendPhotoOpts{
                         Caption:     queueInfo,
                         ParseMode:   "HTML",
                         ReplyMarkup: core.QueueMarkup(saveCache.TrackID),
@@ -363,7 +363,7 @@ func handleSingleTrack(c *td.Client, m *td.Message, updater *td.Message, song ut
                 saveCache.FilePath = dlResult
         }
 
-        if err := vc.Calls.PlayMedia(c, chatId, saveCache.FilePath, saveCache.IsVideo, ""); err != nil {
+        if err := vc.Calls.Play(c, chatId, saveCache.FilePath, saveCache.IsVideo, ""); err != nil {
                 cache.ChatCache.RemoveCurrentSong(chatId)
                 _, err = updater.EditText(c, err.Error(), &td.EditTextMessageOpts{ParseMode: "HTML", DisableWebPagePreview: true})
                 return err
@@ -375,7 +375,7 @@ func handleSingleTrack(c *td.Client, m *td.Message, updater *td.Message, song ut
         )
 
         _ = c.DeleteMessages(chatId, []int64{updater.Id}, &td.DeleteMessagesOpts{Revoke: true})
-        _, err := c.SendPhoto(chatId, config.StartImg, &td.SendPhotoOpts{
+        _, err := c.SendPhoto(chatId, td.InputFileByURL(config.StartImg), &td.SendPhotoOpts{
                 Caption:     nowPlaying,
                 ParseMode:   "HTML",
                 ReplyMarkup: core.ControlButtons("play"),
@@ -478,12 +478,12 @@ func handleMultipleTracks(c *td.Client, m *td.Message, updater *td.Message, trac
                 fullMessage = queueSummary
         }
 
-        if shouldPlayFirst && firstTrack != nil {
+                if shouldPlayFirst && firstTrack != nil {
                 _ = vc.Calls.PlayNext(c, chatId)
         }
 
-              _ = c.DeleteMessages(chatId, []int64{updater.Id}, &td.DeleteMessagesOpts{Revoke: true})
-        _, err := c.SendPhoto(chatId, config.StartImg, &td.SendPhotoOpts{
+        _ = c.DeleteMessages(chatId, []int64{updater.Id}, &td.DeleteMessagesOpts{Revoke: true})
+        _, err := c.SendPhoto(chatId, td.InputFileByURL(config.StartImg), &td.SendPhotoOpts{
                 Caption:     fullMessage,
                 ParseMode:   "HTML",
                 ReplyMarkup: core.QueueMarkup(tracksToAdd[0].TrackID),
