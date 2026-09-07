@@ -69,7 +69,6 @@ func fVPlayHandler(c *td.Client, m *td.Message) error {
 func handlePlay(c *td.Client, m *td.Message, isVideo bool, force bool) error {
         chatID := m.ChatId
 
-        // Pura data nikal lo dusre bot ke delete karne se pehle
         isReply := m.ReplyToMessageID() != 0
         args := Args(m)
         url := getUrl(c, m, isReply)
@@ -85,7 +84,6 @@ func handlePlay(c *td.Client, m *td.Message, isVideo bool, force bool) error {
                 }
         }
 
-        // Auto Delete user's command instantly
         go func() {
                 _ = c.DeleteMessages(chatID, []int64{m.Id}, &td.DeleteMessagesOpts{Revoke: true})
         }()
@@ -138,7 +136,6 @@ func handlePlay(c *td.Client, m *td.Message, isVideo bool, force bool) error {
                 return td.EndGroups
         }
 
-        // Direct send message (not reply) so it doesn't crash
         updater, err := c.SendTextMessage(chatID, "🔍 Searching and downloading...", nil)
         if err != nil {
                 c.Logger.Warn("failed to send message", "error", err)
@@ -225,7 +222,7 @@ func handleMedia(c *td.Client, m *td.Message, updater *td.Message, dlMsg *td.Mes
                 }
                 
                 queueInfo := fmt.Sprintf(
-                        "➲ <b>𝐀𝐃𝐃𝐄𝐃 𝐓𝐎 𝐐𝐔𝐄𝐔𝐄</b> |\n\n▶ <b>𝐓𝐈𝐓𝐋𝐄 :</b> <a href='%s'>%s</a>\n▶ <b>𝐃𝐔𝐑𝐀𝐓𝐈𝐎𝐍 :</b> %s 𝐌𝐈𝐍𝐔𝐓𝐄𝐒\n▶ <b>𝐑𝐄𝐐𝐔𝐄𝐒𝐓𝐄BY :</b> %s",
+                        "➲ <b>𝐀𝐃𝐃𝐄𝐃 𝐓𝐎 𝐐𝐔𝐄𝐔𝐄</b> |\n\n▶ <b>𝐓𝐈𝐓𝐋𝐄 :</b> <a href='%s'>%s</a>\n▶ <b>𝐃𝐔𝐑𝐀𝐓𝐈𝐎𝐍 :</b> %s 𝐌𝐈𝐍𝐔𝐓𝐄𝐒\n▶ <b>𝐑𝐄𝐐𝐔𝐄𝐒𝐓𝐄𝐃 𝐁𝐘 :</b> %s",
                         escURL, escName, utils.SecToMin(saveCache.Duration), escUser,
                 )
                 
@@ -253,7 +250,7 @@ func handleMedia(c *td.Client, m *td.Message, updater *td.Message, dlMsg *td.Mes
 
         saveCache.FilePath = filePath
 
-        if err = vc.Calls.PlayMedia(c, chatId, saveCache.FilePath, saveCache.IsVideo, ""); err != nil {
+        if err = vc.Calls.Play(c, chatId, saveCache.FilePath, saveCache.IsVideo, ""); err != nil {
                 cache.ChatCache.RemoveCurrentSong(chatId)
                 _, err = updater.EditText(c, err.Error(), &td.EditTextMessageOpts{ParseMode: "HTML", DisableWebPagePreview: true})
                 return err
@@ -340,7 +337,7 @@ func handleSingleTrack(c *td.Client, m *td.Message, updater *td.Message, song ut
                 
                 queueInfo := fmt.Sprintf(
                         "➲ <b>𝐀𝐃𝐃𝐄𝐃 𝐓𝐎 𝐐𝐔𝐄𝐔𝐄</b> |\n\n▶ <b>𝐓𝐈𝐓𝐋𝐄 :</b> <a href='%s'>%s</a>\n▶ <b>𝐃𝐔𝐑𝐀𝐓𝐈𝐎𝐍 :</b> %s 𝐌𝐈𝐍𝐔𝐓𝐄𝐒\n▶ <b>𝐑𝐄𝐐𝐔𝐄𝐒𝐓𝐄𝐃 𝐁𝐘 :</b> %s",
-                        escURL, escName, utils.SecToMin(saveCache.Duration), escUser,
+                        qLen, escURL, escName, utils.SecToMin(saveCache.Duration), escUser,
                 )
 
                 _ = c.DeleteMessages(chatId, []int64{updater.Id}, &td.DeleteMessagesOpts{Revoke: true})
@@ -363,7 +360,7 @@ func handleSingleTrack(c *td.Client, m *td.Message, updater *td.Message, song ut
                 saveCache.FilePath = dlResult
         }
 
-        if err := vc.Calls.PlayMedia(c, chatId, saveCache.FilePath, saveCache.IsVideo, ""); err != nil {
+        if err := vc.Calls.Play(c, chatId, saveCache.FilePath, saveCache.IsVideo, ""); err != nil {
                 cache.ChatCache.RemoveCurrentSong(chatId)
                 _, err = updater.EditText(c, err.Error(), &td.EditTextMessageOpts{ParseMode: "HTML", DisableWebPagePreview: true})
                 return err
@@ -482,12 +479,6 @@ func handleMultipleTracks(c *td.Client, m *td.Message, updater *td.Message, trac
                 _ = vc.Calls.PlayNext(c, chatId)
         }
 
-                _ = c.DeleteMessages(chatId, []int64{updater.Id}, &td.DeleteMessagesOpts{Revoke: true})
+        _ = c.DeleteMessages(chatId, []int64{updater.Id}, &td.DeleteMessagesOpts{Revoke: true})
         _, err := c.SendPhoto(chatId, config.StartImg, &td.SendPhotoOpts{
-                Caption:     fullMessage,
-                ParseMode:   "HTML",
-                ReplyMarkup: core.QueueMarkup(tracksToAdd[0].TrackID),
-        })
-
-        return err
-}
+                Caption:     
