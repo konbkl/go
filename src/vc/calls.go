@@ -99,8 +99,7 @@ func (c *TelegramCalls) GetGroupAssistant(chatID int64) (*Assistant, int, error)
         return call, clientIndex, nil
 }
 
-// playSong downloads and plays a single song. It sends a message to the chat to indicate the download status
-// and updates it with the song's information once playback begins.
+// playSong downloads and plays a single song.
 func (c *TelegramCalls) playSong(bot *td.Client, chatID int64, song *utils.CachedTrack) error {
         reply, err := bot.SendTextMessage(chatID, fmt.Sprintf("Downloading %s...", song.Name), nil)
         if err != nil {
@@ -112,7 +111,7 @@ func (c *TelegramCalls) playSong(bot *td.Client, chatID int64, song *utils.Cache
                 return c.PlayNext(bot, chatID)
         }
 
-        if err = c.Play(bot, chatID, song.FilePath, song.IsVideo, ""); err != nil {
+        if err = c.PlayMedia(bot, chatID, song.FilePath, song.IsVideo, ""); err != nil {
                 _, _ = reply.EditText(bot, err.Error(), &td.EditTextMessageOpts{ParseMode: "HTML", DisableWebPagePreview: true})
                 return nil
         }
@@ -165,7 +164,6 @@ func (c *TelegramCalls) Stop(chatId int64, banned bool) error {
 }
 
 // Pause temporarily stops media playback in a voice chat.
-// It returns true if the operation was successful, and an error otherwise.
 func (c *TelegramCalls) Pause(chatId int64) (bool, error) {
         call, index, err := c.GetGroupAssistant(chatId)
         if err != nil {
@@ -247,7 +245,7 @@ func (c *TelegramCalls) PlayedTime(chatId int64) (uint64, error) {
 // SeekStream jumps to a specific time in the current media stream.
 func (c *TelegramCalls) SeekStream(bot *td.Client, chatID int64, filePath string, toSeek, duration int, isVideo bool) error {
         if toSeek < 0 || duration <= 0 {
-                return errors.New("invalid seek position or duration. The position must be positive and the duration must be greater than 0")
+                return errors.New("invalid seek position or duration.")
         }
 
         isURL := urlRegex.MatchString(filePath)
@@ -261,7 +259,7 @@ func (c *TelegramCalls) SeekStream(bot *td.Client, chatID int64, filePath string
                 ffmpegParams = fmt.Sprintf("-ss %d -to %d", toSeek, duration)
         }
 
-        return c.Play(bot, chatID, filePath, isVideo, ffmpegParams)
+        return c.PlayMedia(bot, chatID, filePath, isVideo, ffmpegParams)
 }
 
 // RegisterHandlers sets up the event handlers for the voice call client.
