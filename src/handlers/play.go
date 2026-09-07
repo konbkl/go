@@ -223,12 +223,12 @@ func handleMedia(c *td.Client, m *td.Message, updater *td.Message, dlMsg *td.Mes
                         _ = c.DeleteMessages(chatId, []int64{updater.Id}, &td.DeleteMessagesOpts{Revoke: true})
                         return nil
                 }
-                
+
                 queueInfo := fmt.Sprintf(
                         "➲ <b>𝐀𝐃𝐃𝐄𝐃 𝐓𝐎 𝐐𝐔𝐄𝐔𝐄</b> |\n\n▶ <b>𝐓𝐈𝐓𝐋𝐄 :</b> <a href='%s'>%s</a>\n▶ <b>𝐃𝐔𝐑𝐀𝐓𝐈𝐎𝐍 :</b> %s 𝐌𝐈𝐍𝐔𝐓𝐄𝐒\n▶ <b>𝐑𝐄𝐐𝐔𝐄𝐒𝐓𝐄𝐃 𝐁𝐘 :</b> %s",
                         escURL, escName, utils.SecToMin(saveCache.Duration), escUser,
                 )
-                
+
                 _ = c.DeleteMessages(chatId, []int64{updater.Id}, &td.DeleteMessagesOpts{Revoke: true})
                 _, err = c.SendPhoto(chatId, td.InputFileString(config.StartImg), &td.SendPhotoOpts{
                         Caption:     queueInfo,
@@ -307,7 +307,6 @@ func handleUrl(c *td.Client, m *td.Message, updater *td.Message, trackInfo utils
 
         return handleMultipleTracks(c, m, updater, trackInfo.Results, chatId, isVideo, force)
 }
-
 func handleSingleTrack(c *td.Client, m *td.Message, updater *td.Message, song utils.MusicTrack, filePath string, chatId int64, isVideo bool, force bool) error {
         if song.Duration > int(config.SongDurationLimit) {
                 _, err := updater.EditText(c, fmt.Sprintf("Sorry, song exceeds max duration of %d minutes.", config.SongDurationLimit/60), nil)
@@ -326,7 +325,7 @@ func handleSingleTrack(c *td.Client, m *td.Message, updater *td.Message, song ut
         } else {
                 qLen = cache.ChatCache.AddSong(chatId, &saveCache)
         }
-        
+
         escURL := html.EscapeString(saveCache.URL)
         escName := html.EscapeString(saveCache.Name)
         escUser := html.EscapeString(saveCache.User)
@@ -337,7 +336,7 @@ func handleSingleTrack(c *td.Client, m *td.Message, updater *td.Message, song ut
                         _ = c.DeleteMessages(chatId, []int64{updater.Id}, &td.DeleteMessagesOpts{Revoke: true})
                         return nil
                 }
-                
+
                 queueInfo := fmt.Sprintf(
                         "➲ <b>𝐀𝐃𝐃𝐄𝐃 𝐓𝐎 𝐐𝐔𝐄𝐔𝐄</b> |\n\n▶ <b>𝐓𝐈𝐓𝐋𝐄 :</b> <a href='%s'>%s</a>\n▶ <b>𝐃𝐔𝐑𝐀𝐓𝐈𝐎𝐍 :</b> %s 𝐌𝐈𝐍𝐔𝐓𝐄𝐒\n▶ <b>𝐑𝐄𝐐𝐔𝐄𝐒𝐓𝐄𝐃 𝐁𝐘 :</b> %s",
                         qLen, escURL, escName, utils.SecToMin(saveCache.Duration), escUser,
@@ -478,7 +477,7 @@ func handleMultipleTracks(c *td.Client, m *td.Message, updater *td.Message, trac
                 fullMessage = queueSummary
         }
 
-if shouldPlayFirst && firstTrack != nil {
+        if shouldPlayFirst && firstTrack != nil {
                 _ = vc.Calls.PlayNext(c, chatId)
         }
 
@@ -490,3 +489,4 @@ if shouldPlayFirst && firstTrack != nil {
         })
 
         return err
+}
