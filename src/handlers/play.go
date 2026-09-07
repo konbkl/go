@@ -69,6 +69,7 @@ func fVPlayHandler(c *td.Client, m *td.Message) error {
 func handlePlay(c *td.Client, m *td.Message, isVideo bool, force bool) error {
         chatID := m.ChatId
 
+        // Direct memory read before any other bot deletes the message
         isReply := m.ReplyToMessageID() != 0
         args := Args(m)
         url := getUrl(c, m, isReply)
@@ -84,6 +85,7 @@ func handlePlay(c *td.Client, m *td.Message, isVideo bool, force bool) error {
                 }
         }
 
+        // Auto Delete user's command instantly
         go func() {
                 _ = c.DeleteMessages(chatID, []int64{m.Id}, &td.DeleteMessagesOpts{Revoke: true})
         }()
@@ -136,6 +138,7 @@ func handlePlay(c *td.Client, m *td.Message, isVideo bool, force bool) error {
                 return td.EndGroups
         }
 
+        // Direct Send - Reply nahi karna hai
         updater, err := c.SendTextMessage(chatID, "🔍 Searching and downloading...", nil)
         if err != nil {
                 c.Logger.Warn("failed to send message", "error", err)
@@ -250,7 +253,7 @@ func handleMedia(c *td.Client, m *td.Message, updater *td.Message, dlMsg *td.Mes
 
         saveCache.FilePath = filePath
 
-        if err = vc.Calls.Play(c, chatId, saveCache.FilePath, saveCache.IsVideo, ""); err != nil {
+        if err = vc.Calls.PlayMedia(c, chatId, saveCache.FilePath, saveCache.IsVideo, ""); err != nil {
                 cache.ChatCache.RemoveCurrentSong(chatId)
                 _, err = updater.EditText(c, err.Error(), &td.EditTextMessageOpts{ParseMode: "HTML", DisableWebPagePreview: true})
                 return err
@@ -360,7 +363,7 @@ func handleSingleTrack(c *td.Client, m *td.Message, updater *td.Message, song ut
                 saveCache.FilePath = dlResult
         }
 
-        if err := vc.Calls.Play(c, chatId, saveCache.FilePath, saveCache.IsVideo, ""); err != nil {
+        if err := vc.Calls.PlayMedia(c, chatId, saveCache.FilePath, saveCache.IsVideo, ""); err != nil {
                 cache.ChatCache.RemoveCurrentSong(chatId)
                 _, err = updater.EditText(c, err.Error(), &td.EditTextMessageOpts{ParseMode: "HTML", DisableWebPagePreview: true})
                 return err
@@ -479,6 +482,12 @@ func handleMultipleTracks(c *td.Client, m *td.Message, updater *td.Message, trac
                 _ = vc.Calls.PlayNext(c, chatId)
         }
 
-        _ = c.DeleteMessages(chatId, []int64{updater.Id}, &td.DeleteMessagesOpts{Revoke: true})
+              _ = c.DeleteMessages(chatId, []int64{updater.Id}, &td.DeleteMessagesOpts{Revoke: true})
         _, err := c.SendPhoto(chatId, config.StartImg, &td.SendPhotoOpts{
-                Caption:     
+                Caption:     fullMessage,
+                ParseMode:   "HTML",
+                ReplyMarkup: core.QueueMarkup(tracksToAdd[0].TrackID),
+        })
+
+        return err
+}
